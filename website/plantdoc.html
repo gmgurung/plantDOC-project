@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlantDoc - Harvesting Hope with AI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="plantdoc.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <img src="plantdoc.png" alt="PlantDoc Logo" class="logo" />
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="model.html">Our Model</a></li>
+                <li><a href="about.html">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+        <main>
+            <section class="hero">
+                <h1>Plant Detection</h1>
+                <p>Harvesting Hope, One Leaf at a Time – Turning Data into Growth!</p>
+                <!-- Hidden file input for image upload -->
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+                <!-- Button to trigger file input click -->
+                <button class="btn primary" id="selectImage">Select an Image</button>
+                <!-- Container for displaying prediction results -->
+                <div id="predictionResult"></div>
+            </section>
+            <script>
+                // Wait for the DOM to be fully loaded
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Trigger the file input when the 'Select an Image' button is clicked
+                    document.getElementById("selectImage").addEventListener("click", function () {
+                        document.getElementById("fileInput").click();
+                    });
+
+                    // Handle file selection
+                    document.getElementById("fileInput").addEventListener("change", function () {
+                        if (this.files.length > 0) {
+                            const file = this.files[0];
+                            predictDisease(file);
+                        }
+                    });
+
+                    // Function to handle the prediction process
+                    async function predictDisease(imageFile) {
+                        const formData = new FormData();
+                        formData.append("file", imageFile);
+
+                        try {
+                            const response = await fetch("http://localhost:8000/predict", {
+                                method: "POST",
+                                body: formData,
+                            });
+
+                            if (!response.ok) {
+                                throw new Error("Network response was not ok");
+                            }
+
+                            const result = await response.json();
+                            displayResult(result);
+                        } catch (error) {
+                            console.error("Error:", error);
+                            alert("Failed to predict the disease. Please try again.");
+                        }
+                    }
+
+                    // Function to display the prediction result
+                    function displayResult(result) {
+                        const resultDiv = document.getElementById("predictionResult");
+                        // Ensure confidence is displayed as a percentage with two decimal places
+                        const confidencePercentage = (result.confidence * 100).toFixed(2);
+                        resultDiv.innerHTML = `Prediction: ${result.class} <br> Confidence: ${confidencePercentage}%`;
+                    }
+                });
+            </script>
+
+            <section class="innovation">
+                <h2>Let's grow together, one innovation at a time</h2>
+                <p>
+                    Imagine leveraging PlantDoc's extensive dataset,
+                    featuring over 2,500 images across 13 plant species, to
+                    create an AI-driven tool for early plant disease
+                    detection. This innovation promises to significantly
+                    reduce crop losses and enhance agricultural
+                    productivity, transforming the way farmers and
+                    agronomists approach plant health management.
+                </p>
+            </section>
+            <section class="about">
+                <h2>About Plant Disease Detector</h2>
+                <p>
+                    Plant Disease Detector is an innovative AI-driven
+                    solution aimed at detecting and diagnosing plant
+                    diseases accurately and efficiently. Our mission is to
+                    empower farmers and agricultural experts with
+                    cutting-edge technology to ensure healthy crop yields
+                    and sustainable farming practices.
+                </p>
+            </section>
+            <footer>
+                <p>&copy; 2024 PlantDoc - Innovating for a greener future.</p>
+            </footer>
+        </main>
+</body>
+
+</html>
